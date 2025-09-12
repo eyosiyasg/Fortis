@@ -92,7 +92,11 @@ bot.onText(/\/report/, async (msg) => {
     
     // Send to Telegram
     if (process.env.TELEGRAM_CHAT_ID) {
-       await bot.sendDocument(chatId, buffer, {}, {
+       await bot.sendDocument(process.env.TELEGRAM_CHAT_ID, buffer, {}, {
+      filename: `orders-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+         await bot.sendDocument(process.env.TELEGRAM_CHAT_ID2, buffer, {}, {
       filename: `orders-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
       contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
@@ -144,8 +148,9 @@ app.post('/api/orders', async (req, res) => {
     message += `\n\nSend /report to get all orders`;
     
     // Send to Telegram
-    if (process.env.TELEGRAM_CHAT_ID) {
+    if (process.env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_ID2 ) {
       await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, message, { parse_mode: 'Markdown' });
+      await bot.sendMessage(process.env.TELEGRAM_CHAT_ID2, message, { parse_mode: 'Markdown' });
     }
     
     res.status(200).json({ 
